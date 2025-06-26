@@ -18,6 +18,10 @@ PHP_MODULE=
 PHP_APACHE=YES
 PHP_FPM=YES
 
+msg_info "Installing Apache2"
+$STD apt-get install -y \
+  apache2
+
 setup_php
 setup_mariadb
 
@@ -46,6 +50,7 @@ APACHE_LOG_DIR=/var/log/apache2
 RELEASE=$(curl -fsSL https://api.github.com/repos/Leantime/leantime/releases/latest | grep "tag_name" | awk '{print substr($2, 2, length($2)-3) }')
 curl -fsSL -o "${RELEASE}.tar.gz" "https://github.com/Leantime/leantime/archive/refs/tags/${RELEASE}.tar.gz"
 mkdir -p "/opt/${APPLICATION}"
+mkdir -p /etc/apache2/sites-enabled
 tar xf "${RELEASE}.tar.gz" --strip-components=1 -C "/opt/${APPLICATION}"
 chown -R www-data:www-data "/opt/${APPLICATION}"
 cat <<EOF >/etc/apache2/sites-enabled/000-default.conf
