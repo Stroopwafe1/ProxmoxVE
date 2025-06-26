@@ -42,6 +42,7 @@ msg_ok "Set up Database"
 
 # Setup App
 msg_info "Setup ${APPLICATION}"
+APACHE_LOG_DIR=/var/log/apache2
 RELEASE=$(curl -fsSL https://api.github.com/repos/Leantime/leantime/releases/latest | grep "tag_name" | awk '{print substr($2, 2, length($2)-3) }')
 curl -fsSL -o "${RELEASE}.tar.gz" "https://github.com/Leantime/leantime/archive/refs/tags/${RELEASE}.tar.gz"
 mkdir -p "/opt/${APPLICATION}"
