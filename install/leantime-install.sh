@@ -14,7 +14,6 @@ setting_up_container
 network_check
 update_os
 
-APPLICATION=leantime
 PHP_MODULE=
 PHP_APACHE=YES
 PHP_FPM=YES
