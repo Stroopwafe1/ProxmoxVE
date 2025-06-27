@@ -14,13 +14,15 @@ setting_up_container
 network_check
 update_os
 
+PHP_VERSION=8.4
 PHP_MODULE=
 PHP_APACHE=YES
 PHP_FPM=YES
 
 msg_info "Installing Apache2"
 $STD apt-get install -y \
-  apache2
+  apache2 \
+  libapache2-mod-php
 msg_ok "Installed Apache2"
 
 setup_php
@@ -85,6 +87,7 @@ sed -i -e "s|^LEAN_DB_DATABASE=.*|LEAN_DB_DATABASE=$DB_NAME|" \
   -e "s|^LEAN_SESSION_PASSWORD=.*|LEAN_SESSION_PASSWORD=$(openssl rand -base64 18 | tr -dc 'a-zA-Z0-9' | head -c13)|" \
   "/opt/${APPLICATION}/config/.env"
 
+sed -i -e "s|^;cgi.fix_pathinfo=.*|cgi.fix_pathinfo=0|" "/etc/php/${PHP_VERSION}/apache2/php.ini"
 systemctl restart apache2
 
 echo "${RELEASE}" >/opt/"${APPLICATION}"_version.txt
