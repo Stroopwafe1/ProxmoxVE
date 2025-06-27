@@ -53,7 +53,7 @@ msg_ok "Set up Database"
 # Setup App
 msg_info "Setup ${APPLICATION}"
 APACHE_LOG_DIR=/var/log/apache2
-fetch_and_deploy_gh_release "$APP" "Leantime/leantime" "prebuild" "latest" "/opt/${APP}" Leantime-v[0-9].[0-9].[0-9].tar.gz
+fetch_and_deploy_gh_release "$APP" "Leantime/leantime" "prebuild" "latest" "/opt/${APPLICATION}" Leantime-v[0-9].[0-9].[0-9].tar.gz
 chown -R www-data:www-data "/opt/${APPLICATION}"
 chmod -R 750 "/opt/${APPLICATION}"
 
@@ -93,7 +93,6 @@ sed -i -e "s/^;extension.\(curl\|fileinfo\|gd\|intl\|ldap\|mbstring\|exif\|mysql
 
 systemctl restart apache2
 
-echo "${RELEASE}" >/opt/"${APPLICATION}"_version.txt
 msg_ok "Setup ${APPLICATION}"
 
 motd_ssh
