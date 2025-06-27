@@ -21,11 +21,16 @@ PHP_FPM=YES
 
 msg_info "Installing Apache2"
 $STD apt-get install -y \
-  apache2 \
-  libapache2-mod-php${PHP_VERSION}
+  apache2
 msg_ok "Installed Apache2"
 
 setup_php
+
+msg_info "Installing Apache2 mod for PHP"
+$STD apt-get install -y \
+  libapache2-mod-php${PHP_VERSION}
+msg_ok "Installed Apache2 mod"
+
 setup_mariadb
 
 msg_ok "Installed Dependencies"
