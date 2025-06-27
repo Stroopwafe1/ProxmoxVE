@@ -15,7 +15,7 @@ network_check
 update_os
 
 PHP_VERSION=8.4
-PHP_MODULE=
+PHP_MODULE=mysql
 PHP_APACHE=YES
 PHP_FPM=YES
 
@@ -86,14 +86,16 @@ cat <<EOF >/etc/apache2/sites-enabled/000-default.conf
 EOF
 
 mv "/opt/${APPLICATION}/config/sample.env" "/opt/${APPLICATION}/config/.env"
-sed -i -e "s|^LEAN_DB_DATABASE=.*|LEAN_DB_DATABASE=$DB_NAME|" \
-  -e "s|^LEAN_DB_USER=.*|LEAN_DB_USER=$DB_USER|" \
-  -e "s|^LEAN_DB_PASSWORD=.*|LEAN_DB_PASSWORD=$DB_PASS|" \
-  -e "s|^LEAN_SESSION_PASSWORD=.*|LEAN_SESSION_PASSWORD=$(openssl rand -base64 18 | tr -dc 'a-zA-Z0-9' | head -c13)|" \
+sed -i -e "s|^LEAN_DB_DATABASE.*|LEAN_DB_DATABASE = '$DB_NAME'|" \
+  -e "s|^LEAN_DB_USER.*|LEAN_DB_USER = '$DB_USER'|" \
+  -e "s|^LEAN_DB_PASSWORD.*|LEAN_DB_PASSWORD = '$DB_PASS'|" \
+  -e "s|^LEAN_SESSION_PASSWORD.*|LEAN_SESSION_PASSWORD = '$(openssl rand -base64 18 | tr -dc 'a-zA-Z0-9' | head -c13)'|" \
   "/opt/${APPLICATION}/config/.env"
 
-a2enmod proxy_fcgi setenvif
-a2enconf "php${PHP_VERSION}-fpm"
+a2enmod -q proxy_fcgi setenvif rewrite
+a2enconf -q "php${PHP_VERSION}-fpm"
+
+sed -i -e "s/^;extension.\(curl\|fileinfo\|gd\|intl\|ldap\|mbstring\|exif\|mysqli\|odbc\|openssl\|pdo_mysql\)/extension=\1/g" "/etc/php/${PHP_VERSION}/apache2/php.ini"
 
 systemctl restart apache2
 
