@@ -22,7 +22,7 @@ PHP_FPM=YES
 msg_info "Installing Apache2"
 $STD apt-get install -y \
   apache2 \
-  libapache2-mod-php
+  libapache2-mod-php${PHP_VERSION}
 msg_ok "Installed Apache2"
 
 setup_php
@@ -87,7 +87,9 @@ sed -i -e "s|^LEAN_DB_DATABASE=.*|LEAN_DB_DATABASE=$DB_NAME|" \
   -e "s|^LEAN_SESSION_PASSWORD=.*|LEAN_SESSION_PASSWORD=$(openssl rand -base64 18 | tr -dc 'a-zA-Z0-9' | head -c13)|" \
   "/opt/${APPLICATION}/config/.env"
 
-sed -i -e "s|^;cgi.fix_pathinfo=.*|cgi.fix_pathinfo=0|" "/etc/php/${PHP_VERSION}/apache2/php.ini"
+a2enmod proxy_fcgi setenvif
+a2enconf "php${PHP_VERSION}-fpm"
+
 systemctl restart apache2
 
 echo "${RELEASE}" >/opt/"${APPLICATION}"_version.txt
