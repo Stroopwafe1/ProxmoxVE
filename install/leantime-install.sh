@@ -21,6 +21,7 @@ PHP_FPM=YES
 msg_info "Installing Apache2"
 $STD apt-get install -y \
   apache2
+msg_ok "Installed Apache2"
 
 setup_php
 setup_mariadb
@@ -46,21 +47,15 @@ msg_ok "Set up Database"
 
 # Setup App
 msg_info "Setup ${APPLICATION}"
-APACHE_LOG_DIR=/var/log/apache2
 RELEASE=$(curl -fsSL https://api.github.com/repos/Leantime/leantime/releases/latest | grep "tag_name" | awk '{print substr($2, 2, length($2)-3) }')
-curl -fsSL -o "${RELEASE}.tar.gz" "https://github.com/Leantime/leantime/archive/refs/tags/${RELEASE}.tar.gz"
+curl -fsSL -o "${RELEASE}.tar.gz" "https://github.com/Leantime/leantime/releases/download/${RELEASE}/Leantime-${RELEASE}.tar.gz"
 mkdir -p "/opt/${APPLICATION}"
 mkdir -p /etc/apache2/sites-enabled
 tar xf "${RELEASE}.tar.gz" --strip-components=1 -C "/opt/${APPLICATION}"
 chown -R www-data:www-data "/opt/${APPLICATION}"
-cat <<EOF >/etc/apache2/sites-enabled/000-default.conf
-<VirtualHost *:80>
-  ServerAdmin webmaster@localhost
-  DocumentRoot /opt/${APPLICATION}/public
-  ErrorLog ${APACHE_LOG_DIR}/error.log
-  CustomLog ${APACHE_LOG_DIR}/access.log combined
-</VirtualHost>
-EOF
+chmod -R 750 "/opt/${APPLICATION}"
+
+sed -i -e "s|DocumentRoot.*$|DocumentRoot /opt/${APPLICATION}/public|" /etc/apache2/sites-enabled/000-default.conf
 
 mv "/opt/${APPLICATION}/config/sample.env" "/opt/${APPLICATION}/config/.env"
 sed -i -e "s|^LEAN_DB_DATABASE=.*|LEAN_DB_DATABASE=$DB_NAME|" \
